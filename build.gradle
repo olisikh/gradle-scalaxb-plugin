@@ -5,9 +5,16 @@ buildscript {
         mavenLocal()
         mavenCentral()
         jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath 'gradle.plugin.com.github.maiflai:gradle-scalatest:0.16'
+        classpath 'gradle.plugin.com.github.maiflai:gradle-scalatest:0.19'
+        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
+        classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.7.0'
+
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.9"
     }
 }
 
@@ -15,12 +22,15 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.1'
 }
 
-group 'com.github.alisiikh'
+group 'com.github.alisiikh.scalaxb'
 version '0.0.1'
 
 apply plugin: 'scala'
 apply plugin: 'idea'
+apply plugin: 'com.github.hierynomus.license'
+apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'com.github.maiflai.scalatest'
+
 apply from: 'libs.gradle'
 
 repositories {
@@ -42,13 +52,44 @@ dependencies {
     testCompile libs.pegdown
 }
 
-tasks.withType(ScalaCompile) {
-    configure(scalaCompileOptions) {
-        additionalParameters = ['-feature']
+license {
+    header = file('COPYRIGHT.txt')
+    strictCheck = true
+    skipExistingHeaders = false
+
+    excludes(['**/generated/**/*.scala', '**/scalaxb/**/*.scala'])
+
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    ext.name = 'Oleksii Lisikh'
+    ext.email = 'alisiikh@gmail.com'
+}
+
+spotless {
+    scala {
+        scalafmt('1.2.0').configFile('.scalafmt.conf')
+    }
+    format 'misc', {
+        target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.properties'
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
 
+task licenseAndFormat {
+    group = 'verification'
+    dependsOn 'licenseFormat', 'spotlessApply'
+}
+
+
+
 apply plugin: ScalaxbPlugin
+
+scalaxb {
+    packageName = 'com.github.alisiikh.generated'
+    xsdDir = file("$projectDir/src/test/resources/xsd")
+    destDir = file("$buildDir/generated/src/test/scala")
+}
 
 sourceSets {
     test {
@@ -56,8 +97,22 @@ sourceSets {
     }
 }
 
-scalaxb {
-    packageName = 'com.github.alisiikh.generated'
-    xsdDir = file("$projectDir/src/test/resources/xsd")
-    destDir = file("$buildDir/generated/src/test/scala")
+project(':scalaxb') {
+    apply plugin: 'com.gradle.plugin-publish'
+
+    version = '0.0.1'
+
+    pluginBundle {
+        website = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
+        vcsUrl = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
+        description = 'Gradle plugin for scalaxb (XML databinding for Scala)'
+        tags = ['scalaxb', 'scala', 'xml', 'binding']
+
+        plugins {
+            scalaxbPlugin {
+                id = 'com.github.alisiikh.scalaxb'
+                displayName = 'Gradle plugin for scalaxb (XML databinding for Scala)'
+            }
+        }
+    }
 }

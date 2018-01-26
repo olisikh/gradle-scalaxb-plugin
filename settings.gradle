@@ -1,3 +1,5 @@
 rootProject.name = 'gradle-scalaxb-plugin'
 
 include ':buildSrc'
+
+project(':buildSrc').name = 'scalaxb'
