@@ -52,18 +52,12 @@ dependencies {
     testCompile libs.pegdown
 }
 
-apply plugin: ScalaxbPlugin
-
-sourceSets {
-    test {
-        scala.srcDirs "$buildDir/generated/src/test/scala"
-    }
-}
-
 license {
     header = file('COPYRIGHT.txt')
     strictCheck = true
     skipExistingHeaders = false
+
+    excludes(['**/generated/**/*.scala', '**/scalaxb/**/*.scala'])
 
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     ext.name = 'Oleksii Lisikh'
@@ -75,12 +69,21 @@ spotless {
         scalafmt('1.2.0').configFile('.scalafmt.conf')
     }
     format 'misc', {
-        target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.xml', '**/*.properties', '**/*.xsd'
+        target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.properties'
         indentWithSpaces()
         trimTrailingWhitespace()
         endWithNewline()
     }
 }
+
+task licenseAndFormat {
+    group = 'verification'
+    dependsOn 'licenseFormat', 'spotlessApply'
+}
+
+
+
+apply plugin: ScalaxbPlugin
 
 scalaxb {
     packageName = 'com.github.alisiikh.generated'
@@ -88,8 +91,16 @@ scalaxb {
     destDir = file("$buildDir/generated/src/test/scala")
 }
 
-project(':buildSrc') {
+sourceSets {
+    test {
+        scala.srcDirs "$buildDir/generated/src/test/scala"
+    }
+}
+
+project(':scalaxb') {
     apply plugin: 'com.gradle.plugin-publish'
+
+    version = '0.0.1'
 
     pluginBundle {
         website = 'N/A'
