@@ -1,0 +1,63 @@
+import com.github.alisiikh.gradle.plugin.scalaxb.ScalaxbPlugin
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.github.maiflai:gradle-scalatest:0.16'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.1'
+}
+
+group 'com.github.alisiikh'
+version '0.0.1'
+
+apply plugin: 'scala'
+apply plugin: 'idea'
+apply plugin: 'com.github.maiflai.scalatest'
+apply from: 'libs.gradle'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+compileScala {
+    // turn on full messages for warnings
+    options.compilerArgs << "-Xlint:unchecked"
+}
+
+dependencies {
+    compile libs.scala
+    compile libs.scalaXml
+
+    testCompile libs.scalaTest
+    testCompile libs.pegdown
+}
+
+tasks.withType(ScalaCompile) {
+    configure(scalaCompileOptions) {
+        additionalParameters = ['-feature']
+    }
+}
+
+apply plugin: ScalaxbPlugin
+
+sourceSets {
+    test {
+        scala.srcDirs "$buildDir/generated/src/test/scala"
+    }
+}
+
+scalaxb {
+    packageName = 'com.github.alisiikh.generated'
+    xsdDir = file("$projectDir/src/test/resources/xsd")
+    destDir = file("$buildDir/generated/src/test/scala")
+}

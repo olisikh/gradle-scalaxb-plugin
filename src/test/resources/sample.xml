@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<User id="1">
+    <username>john</username>
+    <password>s3cret!</password>
+    <profile>
+        <birthday>1990-01-01</birthday>
+        <firstName>Johnny</firstName>
+        <lastName>Snow</lastName>
+    </profile>
+</User>
