@@ -73,8 +73,7 @@ spotless {
         scalafmt('1.2.0').configFile('..' + File.separator + '.scalafmt.conf')
     }
     format 'misc', {
-        target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.xml', '**/*.conf', '**/*.properties',
-                '**/*.xsd', '**/*.xjb'
+        target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.xml', '**/*.properties', '**/*.xsd'
         indentWithSpaces()
         trimTrailingWhitespace()
         endWithNewline()
