@@ -103,7 +103,7 @@ project(':scalaxb') {
     version = '0.0.1'
 
     pluginBundle {
-        website = 'N/A'
+        website = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
         vcsUrl = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
         description = 'Gradle plugin for scalaxb (XML databinding for Scala)'
         tags = ['scalaxb', 'scala', 'xml', 'binding']
