@@ -62,6 +62,8 @@ sourceSets {
 
 license {
     header = file('COPYRIGHT.txt')
+    strictCheck = true
+    skipExistingHeaders = false
 
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
     ext.name = 'Oleksii Lisikh'
