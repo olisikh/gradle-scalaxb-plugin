@@ -1,6 +1,8 @@
 # gradle-scalaxb-plugin
 Gradle plugin for Scalaxb http://scalaxb.org/
 
+[![Build Status](https://travis-ci.org/alisiikh/gradle-scalaxb-plugin.svg?branch=master)](https://travis-ci.org/alisiikh/gradle-scalaxb-plugin)
+
 ## Installation
 https://plugins.gradle.org/plugin/com.github.alisiikh.scalaxb
 

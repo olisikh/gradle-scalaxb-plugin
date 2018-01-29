@@ -12,7 +12,7 @@ buildscript {
     dependencies {
         classpath 'gradle.plugin.com.github.maiflai:gradle-scalatest:0.19'
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
-        classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.7.0'
+//        classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.7.0'
 
         classpath "com.gradle.publish:plugin-publish-plugin:0.9.9"
     }
@@ -27,9 +27,9 @@ version '0.0.1'
 
 apply plugin: 'scala'
 apply plugin: 'idea'
-apply plugin: 'com.github.hierynomus.license'
-apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'com.github.maiflai.scalatest'
+apply plugin: 'com.github.hierynomus.license'
+//apply plugin: 'com.diffplug.gradle.spotless'
 
 apply from: 'libs.gradle'
 
@@ -76,10 +76,10 @@ spotless {
     }
 }
 
-task licenseAndFormat {
-    group = 'verification'
-    dependsOn 'licenseFormat', 'spotlessApply'
-}
+//task licenseAndFormat {
+//    group = 'verification'
+//    dependsOn 'licenseFormat', 'spotlessApply'
+//}
 
 
 
