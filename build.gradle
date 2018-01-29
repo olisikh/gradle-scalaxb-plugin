@@ -64,17 +64,17 @@ license {
     ext.email = 'alisiikh@gmail.com'
 }
 
-spotless {
-    scala {
-        scalafmt('1.2.0').configFile('.scalafmt.conf')
-    }
-    format 'misc', {
-        target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.properties'
-        indentWithSpaces()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-}
+//spotless {
+//    scala {
+//        scalafmt('1.2.0').configFile('.scalafmt.conf')
+//    }
+//    format 'misc', {
+//        target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.properties'
+//        indentWithSpaces()
+//        trimTrailingWhitespace()
+//        endWithNewline()
+//    }
+//}
 
 //task licenseAndFormat {
 //    group = 'verification'
