@@ -17,6 +17,9 @@ buildscript {
     }
 }
 
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.1'
 }
@@ -29,6 +32,7 @@ apply plugin: 'idea'
 apply plugin: 'com.github.maiflai.scalatest'
 
 apply from: 'libs.gradle'
+apply plugin: ScalaxbPlugin
 
 repositories {
     mavenLocal()
@@ -37,6 +41,8 @@ repositories {
 }
 
 dependencies {
+    scalaxbRuntime libs.scalaxb
+
     compile libs.scala
     compile libs.scalaXml
 
@@ -96,8 +102,6 @@ project(':scalaxb') {
         }
     }
 }
-
-apply plugin: ScalaxbPlugin
 
 scalaxb {
     packageName = 'com.github.alisiikh.generated'
