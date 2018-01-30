@@ -13,7 +13,6 @@ buildscript {
         classpath 'gradle.plugin.com.github.maiflai:gradle-scalatest:0.19'
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
         classpath 'com.diffplug.spotless:spotless-plugin-gradle:3.7.0'
-
         classpath "com.gradle.publish:plugin-publish-plugin:0.9.9"
     }
 }
@@ -28,8 +27,6 @@ version '0.0.1'
 apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'com.github.maiflai.scalatest'
-apply plugin: 'com.github.hierynomus.license'
-apply plugin: 'com.diffplug.gradle.spotless'
 
 apply from: 'libs.gradle'
 
@@ -37,11 +34,6 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
-}
-
-compileScala {
-    // turn on full messages for warnings
-    options.compilerArgs << "-Xlint:unchecked"
 }
 
 dependencies {
@@ -52,46 +44,32 @@ dependencies {
     testCompile libs.pegdown
 }
 
-license {
-    header = file('LICENSE')
-    strictCheck = true
-    skipExistingHeaders = false
+allprojects {
+    apply plugin: 'com.github.hierynomus.license'
+    apply plugin: 'com.diffplug.gradle.spotless'
 
-    excludes(['**/generated/**/*.scala', '**/scalaxb/**/*.scala', '**/*.xml', '**/*.xsd'])
+    license {
+        header = file("$rootDir/LICENSE")
+        strictCheck = true
+        skipExistingHeaders = false
 
-    ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    ext.name = 'Oleksii Lisikh'
-    ext.email = 'alisiikh@gmail.com'
-}
+        excludes(['**/generated/**/*.scala',
+                  '**/scalaxb/*.scala',
+                  '**/*.xml',
+                  '**/*.xsd'])
 
-spotless {
-    scala {
-        scalafmt('1.2.0').configFile('.scalafmt.conf')
+        ext.year = Calendar.getInstance().get(Calendar.YEAR)
+        ext.name = 'Oleksii Lisikh'
+        ext.email = 'alisiikh@gmail.com'
     }
-    format 'misc', {
-        target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.properties'
-        indentWithSpaces()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-}
 
-task licenseAndFormat {
-    group = 'verification'
-    dependsOn 'licenseFormat', 'spotlessApply'
-}
-
-apply plugin: ScalaxbPlugin
-
-scalaxb {
-    packageName = 'com.github.alisiikh.generated'
-    xsdDir = file("$projectDir/src/test/resources/xsd")
-    destDir = file("$buildDir/generated/src/test/scala")
-}
-
-sourceSets {
-    test {
-        scala.srcDirs "$buildDir/generated/src/test/scala"
+    spotless {
+        format 'misc', {
+            target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.properties'
+            indentWithSpaces()
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
     }
 }
 
@@ -99,6 +77,10 @@ project(':scalaxb') {
     apply plugin: 'com.gradle.plugin-publish'
 
     version = '0.0.1'
+
+    task licenseAndFormat {
+        dependsOn 'licenseFormat', 'spotlessApply'
+    }
 
     pluginBundle {
         website = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
@@ -112,5 +94,19 @@ project(':scalaxb') {
                 displayName = 'Gradle plugin for scalaxb (XML databinding for Scala)'
             }
         }
+    }
+}
+
+apply plugin: ScalaxbPlugin
+
+scalaxb {
+    packageName = 'com.github.alisiikh.generated'
+    xsdDir = file("$projectDir/src/test/resources/xsd")
+    destDir = file("$buildDir/generated/src/test/scala")
+}
+
+sourceSets {
+    test {
+        scala.srcDirs "$buildDir/generated/src/test/scala"
     }
 }
