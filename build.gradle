@@ -76,7 +76,7 @@ allprojects {
 project(':scalaxb') {
     apply plugin: 'com.gradle.plugin-publish'
 
-    version = '0.0.1'
+    version = '0.0.2'
 
     task licenseAndFormat {
         dependsOn 'licenseFormat', 'spotlessApply'
