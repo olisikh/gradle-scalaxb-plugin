@@ -17,9 +17,6 @@ buildscript {
     }
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
 task wrapper(type: Wrapper) {
     gradleVersion = '4.1'
 }
@@ -33,6 +30,9 @@ apply plugin: 'com.github.maiflai.scalatest'
 
 apply from: 'libs.gradle'
 apply plugin: ScalaxbPlugin
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 repositories {
     mavenLocal()
