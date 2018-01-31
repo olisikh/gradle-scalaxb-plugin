@@ -7,17 +7,25 @@ Gradle plugin for Scalaxb http://scalaxb.org/
 https://plugins.gradle.org/plugin/com.github.alisiikh.scalaxb
 
 ## Basic setup
+1. Add scalaxb dependency to scalaxbRuntime configuration:
+```groovy
+dependencies {
+   scalaxbRuntime 'org.scalaxb:scalaxb_2.12:1.5.3'
+}
+```
+
+2. Configure scalaxb plugin
+
 ```groovy
 scalaxb {
     packageName = 'com.example.generated'
-    xsdDir = file("$projectDir/src/main/resources/xsd")
+    srcDir = file("$projectDir/src/main/resources/xsd")
     destDir = file("$buildDir/generated/src/main/scala")
 }
 ```
 
-With this setup, plugin generates scalaxb scala classes in `build/generated/src/main/scala` folder of your project with taken xsd schemas from `src/main/resources/xsd` folder of your project, and the package name `com.example.generated` will be used
+3. Add generated sources folder to the sourceSet where you require them
 
-You also need to inform your configuration to pick up the generated files to the classpath
 ```groovy
 sourceSets {
     test {
@@ -25,3 +33,6 @@ sourceSets {
     }
 }
 ```
+
+With this setup, plugin generates scalaxb scala classes in `build/generated/src/main/scala` folder of your project with taken xsd schemas from `src/main/resources/xsd` folder of your project, and the package name `com.example.generated` will be used
+
