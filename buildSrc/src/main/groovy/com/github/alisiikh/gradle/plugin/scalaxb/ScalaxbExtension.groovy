@@ -26,7 +26,8 @@ import org.gradle.api.Project
 
 @ToString(excludes = 'project', includeNames = true, includePackage = false)
 class ScalaxbExtension {
-    File xsdDir
+    // TODO: move all available args here
+    File srcDir
     File destDir
     String packageName
     Boolean packageDir = true

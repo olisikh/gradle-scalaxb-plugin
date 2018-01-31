@@ -105,7 +105,7 @@ project(':scalaxb') {
 
 scalaxb {
     packageName = 'com.github.alisiikh.generated'
-    xsdDir = file("$projectDir/src/test/resources/xsd")
+    srcDir = file("$projectDir/src/test/resources/xsd")
     destDir = file("$buildDir/generated/src/test/scala")
 }
 

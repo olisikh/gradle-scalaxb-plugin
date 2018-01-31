@@ -25,22 +25,22 @@ import org.gradle.api.tasks.JavaExec
 
 class ScalaxbGenTask extends JavaExec {
 
+    private static final def schemaFilter = new FileFilter() {
+        @Override
+        boolean accept(File file) {
+            return file.name.endsWith(".xsd") || file.name.endsWith(".wsdl")
+        }
+    }
+
     ScalaxbGenTask() {
     }
 
     void exec() {
         def ext = project.extensions.getByType(ScalaxbExtension)
 
-        project.configurations.scalaxbRuntime.each { println it }
+        def schemaFiles = ext.srcDir.listFiles(schemaFilter)
 
-        def xsdFiles = ext.xsdDir.listFiles(new FileFilter() {
-            @Override
-            boolean accept(File file) {
-                return file.name.endsWith(".xsd")
-            }
-        })
-
-        xsdFiles.each { xsdFile ->
+        schemaFiles.each { srcFile ->
             project.javaexec {
                 classpath = project.configurations.scalaxbRuntime
                 main = 'scalaxb.compiler.Main'
@@ -49,7 +49,7 @@ class ScalaxbGenTask extends JavaExec {
                 standardInput = System.in
                 standardOutput = System.out
 
-                args xsdFile.absolutePath
+                args srcFile.absolutePath
                 args "-p", ext.packageName
                 args "-d", ext.destDir
 

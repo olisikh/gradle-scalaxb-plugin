@@ -21,6 +21,7 @@
  */
 package com.github.alisiikh.gradle.plugin.scalaxb
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.ConventionTask
@@ -28,6 +29,10 @@ import org.gradle.api.internal.ConventionTask
 class ScalaxbPlugin implements Plugin<Project> {
     private final def SCALAXB_EXT_NAME = 'scalaxb'
     private final def SCALAXB_TASK_NAME = 'generateScalaxb'
+
+    private final def SCALAXB_DEP_HINT = "dependencies {\n" +
+            "   scalaxbRuntime 'org.scalaxb:scalaxb_2.12:2.12.3'" +
+            "}"
 
     private Project project
 
@@ -51,7 +56,8 @@ class ScalaxbPlugin implements Plugin<Project> {
         project.afterEvaluate { p ->
             def scalaxbDependency = p.configurations.scalaxbRuntime.find { it.name.matches("scalaxb_.*-.*\\.jar") }
             if (!scalaxbDependency) {
-                scalaxbRuntime "org.scalaxb:scalaxb_2.12:2.12.3"
+                throw new GradleException("No scalaxb dependency found in the scalaxbRuntime classpath.\n" +
+                        SCALAXB_DEP_HINT)
             }
         }
     }
