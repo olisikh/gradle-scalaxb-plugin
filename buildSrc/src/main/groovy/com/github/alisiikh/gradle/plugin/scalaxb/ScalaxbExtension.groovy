@@ -29,6 +29,7 @@ class ScalaxbExtension {
     File xsdDir
     File destDir
     String packageName
+    Boolean packageDir = true
 
     private Project project
 
