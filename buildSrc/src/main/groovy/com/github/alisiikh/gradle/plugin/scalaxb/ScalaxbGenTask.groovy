@@ -28,9 +28,12 @@ class ScalaxbGenTask extends JavaExec {
                 standardInput = System.in
                 standardOutput = System.out
 
+                println(ext)
+
                 args xsdFile.absolutePath
                 args "-p", ext.packageName
                 args "-d", ext.destDir
+                args "--package-dir"
             }
         }
     }
