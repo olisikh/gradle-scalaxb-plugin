@@ -21,20 +21,42 @@
  */
 package com.github.alisiikh.gradle.plugin.scalaxb
 
-import groovy.transform.ToString
-import org.gradle.api.Project
+import org.gradle.api.tasks.JavaExec
 
-@ToString(excludes = 'project', includeNames = true, includePackage = false)
-class ScalaxbExtension {
-    // TODO: move all available args here
-    File srcDir
-    File destDir
-    String packageName
-    Boolean packageDir = true
+class ScalaxbGenTask extends JavaExec {
 
-    private Project project
+    private static final def schemaFilter = new FileFilter() {
+        @Override
+        boolean accept(File file) {
+            return file.name.endsWith(".xsd") || file.name.endsWith(".wsdl")
+        }
+    }
 
-    ScalaxbExtension(Project project) {
-        this.project = project
+    ScalaxbGenTask() {
+    }
+
+    void exec() {
+        def ext = project.extensions.getByType(ScalaxbExtension)
+
+        def schemaFiles = ext.srcDir.listFiles(schemaFilter)
+
+        schemaFiles.each { srcFile ->
+            project.javaexec {
+                classpath = project.configurations.scalaxbRuntime
+                main = 'scalaxb.compiler.Main'
+
+                systemProperties = System.properties as Map
+                standardInput = System.in
+                standardOutput = System.out
+
+                args srcFile.absolutePath
+                args "-p", ext.packageName
+                args "-d", ext.destDir
+
+                if (ext.packageDir) {
+                    args "--package-dir"
+                }
+            }
+        }
     }
 }
