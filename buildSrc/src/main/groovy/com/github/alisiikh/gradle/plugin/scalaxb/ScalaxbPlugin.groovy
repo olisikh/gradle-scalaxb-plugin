@@ -31,7 +31,7 @@ class ScalaxbPlugin implements Plugin<Project> {
     private final def SCALAXB_TASK_NAME = 'generateScalaxb'
 
     private final def SCALAXB_DEP_HINT = "dependencies {\n" +
-            "   scalaxbRuntime 'org.scalaxb:scalaxb_2.12:2.12.3'" +
+            "   scalaxbRuntime 'org.scalaxb:scalaxb_2.12:2.12.3'\n" +
             "}"
 
     private Project project
