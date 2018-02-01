@@ -71,7 +71,7 @@ allprojects {
 
     spotless {
         format 'misc', {
-            target '**/*.gradle', '**/*.md', '**/.gitignore', '**/*.properties'
+            target '**/*.gradle', '**/*.properties'
             indentWithSpaces()
             trimTrailingWhitespace()
             endWithNewline()
