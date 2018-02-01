@@ -49,12 +49,57 @@ class ScalaxbGenTask extends JavaExec {
                 standardInput = System.in
                 standardOutput = System.out
 
-                args srcFile.absolutePath
-                args "-p", ext.packageName
-                args "-d", ext.destDir
-
-                if (ext.packageDir) {
-                    args "--package-dir"
+                ext.with {
+                    args srcFile.absolutePath
+                    args "-d", destDir
+                    if (packageDir) {
+                        args "--package-dir"
+                    }
+                    if (packageName) {
+                        args "-p", packageName
+                    }
+                    packages?.each {
+                        args "--package:${it.key}=${it.value}"
+                    }
+                    if (classPrefix) {
+                        args "--class-prefix", classPrefix
+                    }
+                    if (paramPrefix) {
+                        args "--param-prefix", paramPrefix
+                    }
+                    if (wrapContents) {
+                        args "--wrap-contents", wrapContents
+                    }
+                    if (contentsLimit) {
+                        args "--contents-limit", contentsLimit
+                    }
+                    if (chunkSize) {
+                        args "--chunk-size", chunkSize
+                    }
+                    if (protocolFile) {
+                        args "--protocol-file", protocolFile
+                    }
+                    if (protocolPackage) {
+                        args "--protocol-package", protocolPackage
+                    }
+                    if (prependFamily) {
+                        args "--prepend-family"
+                    }
+                    if (withRuntime) {
+                        args "--no-runtime"
+                    }
+                    if (laxAny) {
+                        args "--lax-any"
+                    }
+                    if (blocking) {
+                        args "--blocking"
+                    }
+                    if (dispatchVersion) {
+                        args "--dispatch-version", dispatchVersion
+                    }
+                    if (verbose) {
+                        args "--verbose"
+                    }
                 }
             }
         }
