@@ -26,11 +26,29 @@ import org.gradle.api.Project
 
 @ToString(excludes = 'project', includeNames = true, includePackage = false)
 class ScalaxbExtension {
-    // TODO: move all available args here
+    // TODO: have a look into
+    // https://github.com/eed3si9n/scalaxb/blob/master/cli/src/main/scala/scalaxb/compiler/Main.scala
+    // it contains more available parameters
     File srcDir
     File destDir
-    String packageName
     Boolean packageDir = true
+    String packageName
+    Map<String, String> packages
+    Boolean autoPackages
+    String classPrefix
+    String paramPrefix
+    String attributePrefix
+    Boolean prependFamily
+    String wrapContents
+    String protocolFile
+    String protocolPackage
+    Long contentsLimit
+    Long chunkSize
+    Boolean withRuntime
+    Boolean laxAny
+    Boolean blocking
+    Boolean verbose
+    String dispatchVersion
 
     private Project project
 

@@ -71,6 +71,7 @@ class ScalaxbPlugin implements Plugin<Project> {
 
         scalaxbGenTask.convention.plugins["scalaxb"] = scalaxbExt
 
-        project.tasks.findByName('compileScala').dependsOn(scalaxbGenTask)
+        def scalaCompile = project.tasks.findByName('compileScala')
+        scalaCompile?.dependsOn(scalaxbGenTask)
     }
 }
