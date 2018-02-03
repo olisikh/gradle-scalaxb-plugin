@@ -2,14 +2,11 @@ ext {
     scalaLangVersion = '2.12'
     scalaVersion = '2.12.3'
     scalaXmlVersion = '1.0.6'
-    scalaxbVersion = '1.5.2'
+    scalaTestVersion = '3.0.4'
 
     libs = [
             scala    : "org.scala-lang:scala-library:$scalaVersion",
-            scalaxb  : "org.scalaxb:scalaxb_$scalaLangVersion:$scalaxbVersion",
-            scalaXml : "org.scala-lang.modules:scala-xml_$scalaLangVersion:$scalaXmlVersion",
-
-            scalaTest: "org.scalatest:scalatest_$scalaLangVersion:3.0.4",
+            scalaTest: "org.scalatest:scalatest_$scalaLangVersion:$scalaTestVersion",
             pegdown  : 'org.pegdown:pegdown:1.6.0'
     ]
 }

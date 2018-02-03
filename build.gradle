@@ -42,7 +42,6 @@ repositories {
 
 dependencies {
     compile libs.scala
-    testCompile libs.scalaXml
     testCompile libs.scalaTest
     testCompile libs.pegdown
 }
@@ -100,15 +99,17 @@ task licenseAndFormat {
 }
 
 pluginBundle {
+    def pluginDescription = 'Gradle plugin for scalaxb (XML data-binding for Scala)'
+
     website = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
     vcsUrl = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
-    description = 'Gradle plugin for scalaxb (XML databinding for Scala)'
+    description = pluginDescription
     tags = ['scalaxb', 'scala', 'xml', 'binding']
 
     plugins {
         scalaxbPlugin {
             id = 'com.github.alisiikh.scalaxb'
-            displayName = 'Gradle plugin for Scalaxb (XML data binding for Scala)'
+            displayName = pluginDescription
         }
     }
 }
