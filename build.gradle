@@ -40,6 +40,13 @@ repositories {
     jcenter()
 }
 
+dependencies {
+    compile libs.scala
+    testCompile libs.scalaXml
+    testCompile libs.scalaTest
+    testCompile libs.pegdown
+}
+
 sourceSets {
     functionalTest {
         scala.srcDir file('src/functionalTest/scala')
@@ -47,13 +54,6 @@ sourceSets {
         compileClasspath += sourceSets.main.output + configurations.testRuntime
         runtimeClasspath += output + compileClasspath
     }
-}
-
-dependencies {
-    compile libs.scala
-    testCompile libs.scalaXml
-    testCompile libs.scalaTest
-    testCompile libs.pegdown
 }
 
 task functionalTest(type: Test) {
@@ -69,7 +69,7 @@ gradlePlugin {
 }
 
 license {
-    header = file("$rootDir/LICENSE")
+    header = file('LICENSE')
     strictCheck = true
     skipExistingHeaders = false
 
@@ -108,7 +108,7 @@ pluginBundle {
     plugins {
         scalaxbPlugin {
             id = 'com.github.alisiikh.scalaxb'
-            displayName = 'Gradle plugin for scalaxb (XML databinding for Scala)'
+            displayName = 'Gradle plugin for Scalaxb (XML data binding for Scala)'
         }
     }
 }

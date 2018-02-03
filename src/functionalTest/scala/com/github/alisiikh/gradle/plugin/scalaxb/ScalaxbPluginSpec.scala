@@ -43,11 +43,11 @@ class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter w
     buildFile = testProjectDir.newFile("build.gradle")
 
     withWriter(buildFile) { writer =>
-      writer.write("""plugins {
+      writer.write("""
+          |plugins {
+          |  id 'scala'
           |  id 'com.github.alisiikh.scalaxb'
           |}
-          |
-          |apply plugin: 'scala'
           |
           |repositories {
           |  mavenLocal()
@@ -67,29 +67,49 @@ class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter w
     buildFile.delete()
   }
 
+  // TODO: check that build/generated folder contains scala sources after :generateScalaxb task is performed
   "Scalaxb plugin" - {
-    "generates scala sources" in {
-      withWriter(buildFile, append = true) { writer =>
-        writer.append(
-          """
-            |scalaxb {
-            |    packageName = 'com.github.alisiikh.generated'
-            |    srcDir = file("$buildDir/src/main/resources/xsd")
-            |    destDir = file("$buildDir/generated/src/main/scala")
-            |}
-          """.stripMargin
-        )
+    "generates scala sources when" - {
+      ":generateScalaxb task is invoked directly" in {
+        injectScalaxbPluginConfig()
+
+        val result = GradleRunner.create
+          .withProjectDir(testProjectDir.getRoot)
+          .withArguments("generateScalaxb")
+          .withPluginClasspath()
+          .build
+
+        val taskResult = result.task(":generateScalaxb")
+        taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
       }
 
-      val result = GradleRunner.create
-        .withProjectDir(testProjectDir.getRoot)
-        .withArguments("generateScalaxb")
-        .withPluginClasspath()
-        .build
+      ":generateScalaxb task is called during :build task" in {
+        injectScalaxbPluginConfig()
 
-      result.task(":generateScalaxb").getOutcome shouldBe TaskOutcome.SUCCESS
+        val result = GradleRunner.create
+          .withProjectDir(testProjectDir.getRoot)
+          .withArguments("build")
+          .withPluginClasspath()
+          .build
+
+        val taskResult = result.task(":generateScalaxb")
+        taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
+      }
     }
   }
+
+  def injectScalaxbPluginConfig(): Unit =
+    withWriter(buildFile, append = true) { writer =>
+      writer.append(
+        """
+          |scalaxb {
+          |    packageName = 'com.github.alisiikh.generated'
+          |    srcDir = file("$buildDir/src/main/resources/xsd")
+          |    destDir = file("$buildDir/generated/src/main/scala")
+          |}
+        """.stripMargin
+      )
+    }
 
   def withWriter(file: File, append: Boolean = false)(body: PrintWriter => Unit): Unit = {
     val writer = new PrintWriter(new FileWriter(file, append))
