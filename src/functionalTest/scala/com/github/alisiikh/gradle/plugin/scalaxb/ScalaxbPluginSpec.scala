@@ -4,18 +4,20 @@ import java.io.{File, FileWriter, PrintWriter}
 
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.{GradleRunner, TaskOutcome}
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpecLike, Matchers}
+import org.scalatest._
 
 import scala.io.Source
 
-class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter with BeforeAndAfterAll {
-
-  val deleteTestFolderOnExit = true
+class ScalaxbPluginSpec
+    extends FreeSpecLike
+    with Matchers
+    with OptionValues
+    with BeforeAndAfter
+    with BeforeAndAfterAll {
 
   val testProjectDir = new TemporaryFolder
 
   var buildFile: File = _
-  var xsdFile: File = _
 
   override def beforeAll: Unit = {
     super.beforeAll()
@@ -35,8 +37,7 @@ class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter w
 
   override def afterAll: Unit = {
     super.afterAll()
-
-    if (deleteTestFolderOnExit) testProjectDir.delete()
+    testProjectDir.delete()
   }
 
   before {
@@ -67,7 +68,6 @@ class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter w
     buildFile.delete()
   }
 
-  // TODO: check that build/generated folder contains scala sources after :generateScalaxb task is performed
   "Scalaxb plugin" - {
     "generates scala sources when" - {
       ":generateScalaxb task is invoked directly" in {
@@ -81,6 +81,9 @@ class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter w
 
         val taskResult = result.task(":generateScalaxb")
         taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
+
+        val buildOutput = result.getOutput
+        checkScalaxbOutput(buildOutput)
       }
 
       ":generateScalaxb task is called during :build task" in {
@@ -94,6 +97,9 @@ class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter w
 
         val taskResult = result.task(":generateScalaxb")
         taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
+
+        val buildOutput = result.getOutput
+        checkScalaxbOutput(buildOutput)
       }
     }
   }
@@ -104,12 +110,21 @@ class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter w
         """
           |scalaxb {
           |    packageName = 'com.github.alisiikh.generated'
-          |    srcDir = file("$buildDir/src/main/resources/xsd")
+          |    srcDir = file("$projectDir/src/main/resources/xsd")
           |    destDir = file("$buildDir/generated/src/main/scala")
           |}
         """.stripMargin
       )
     }
+
+  def checkScalaxbOutput(buildOutput: String): Unit = {
+    "generated .*/generated/src/main/scala/com/github/alisiikh/generated/sample.scala.".r
+      .findFirstIn(buildOutput) shouldBe 'defined
+    "generated .*/generated/src/main/scala/com/github/alisiikh/generated/xmlprotocol.scala.".r
+      .findFirstIn(buildOutput) shouldBe 'defined
+    "generated .*/generated/src/main/scala/scalaxb/scalaxb.scala.".r
+      .findFirstIn(buildOutput) shouldBe 'defined
+  }
 
   def withWriter(file: File, append: Boolean = false)(body: PrintWriter => Unit): Unit = {
     val writer = new PrintWriter(new FileWriter(file, append))
