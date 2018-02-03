@@ -8,11 +8,7 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpecLike, Matchers}
 
 import scala.io.Source
 
-class ScalaxbPluginSpec
-    extends FreeSpecLike
-    with Matchers
-    with BeforeAndAfter
-    with BeforeAndAfterAll {
+class ScalaxbPluginSpec extends FreeSpecLike with Matchers with BeforeAndAfter with BeforeAndAfterAll {
 
   val deleteTestFolderOnExit = true
 
@@ -32,7 +28,8 @@ class ScalaxbPluginSpec
       writer.write(
         Source
           .fromInputStream(getClass.getResourceAsStream("/xsd/simple.xsd"))
-          .mkString)
+          .mkString
+      )
     }
   }
 
@@ -94,8 +91,7 @@ class ScalaxbPluginSpec
     }
   }
 
-  def withWriter(file: File, append: Boolean = false)(
-      body: PrintWriter => Unit): Unit = {
+  def withWriter(file: File, append: Boolean = false)(body: PrintWriter => Unit): Unit = {
     val writer = new PrintWriter(new FileWriter(file, append))
     try {
       body(writer)
