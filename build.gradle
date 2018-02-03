@@ -40,6 +40,12 @@ repositories {
     jcenter()
 }
 
+dependencies {
+    compile libs.scala
+    testCompile libs.scalaTest
+    testCompile libs.pegdown
+}
+
 sourceSets {
     functionalTest {
         scala.srcDir file('src/functionalTest/scala')
@@ -47,13 +53,6 @@ sourceSets {
         compileClasspath += sourceSets.main.output + configurations.testRuntime
         runtimeClasspath += output + compileClasspath
     }
-}
-
-dependencies {
-    compile libs.scala
-    testCompile libs.scalaXml
-    testCompile libs.scalaTest
-    testCompile libs.pegdown
 }
 
 task functionalTest(type: Test) {
@@ -69,7 +68,7 @@ gradlePlugin {
 }
 
 license {
-    header = file("$rootDir/LICENSE")
+    header = file('LICENSE')
     strictCheck = true
     skipExistingHeaders = false
 
@@ -85,7 +84,7 @@ license {
 
 spotless {
     scala {
-        scalafmt()
+        scalafmt('1.4.0').configFile('.scalafmt.conf')
     }
     format 'misc', {
         target '**/*.gradle', '**/*.properties'
@@ -100,15 +99,17 @@ task licenseAndFormat {
 }
 
 pluginBundle {
+    def pluginDescription = 'Gradle plugin for scalaxb (XML data-binding for Scala)'
+
     website = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
     vcsUrl = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
-    description = 'Gradle plugin for scalaxb (XML databinding for Scala)'
+    description = pluginDescription
     tags = ['scalaxb', 'scala', 'xml', 'binding']
 
     plugins {
         scalaxbPlugin {
             id = 'com.github.alisiikh.scalaxb'
-            displayName = 'Gradle plugin for scalaxb (XML databinding for Scala)'
+            displayName = pluginDescription
         }
     }
 }

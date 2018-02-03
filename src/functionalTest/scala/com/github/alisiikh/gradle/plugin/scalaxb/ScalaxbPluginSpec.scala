@@ -4,22 +4,20 @@ import java.io.{File, FileWriter, PrintWriter}
 
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.{GradleRunner, TaskOutcome}
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpecLike, Matchers}
+import org.scalatest._
 
 import scala.io.Source
 
 class ScalaxbPluginSpec
     extends FreeSpecLike
     with Matchers
+    with OptionValues
     with BeforeAndAfter
     with BeforeAndAfterAll {
-
-  val deleteTestFolderOnExit = true
 
   val testProjectDir = new TemporaryFolder
 
   var buildFile: File = _
-  var xsdFile: File = _
 
   override def beforeAll: Unit = {
     super.beforeAll()
@@ -32,25 +30,25 @@ class ScalaxbPluginSpec
       writer.write(
         Source
           .fromInputStream(getClass.getResourceAsStream("/xsd/simple.xsd"))
-          .mkString)
+          .mkString
+      )
     }
   }
 
   override def afterAll: Unit = {
     super.afterAll()
-
-    if (deleteTestFolderOnExit) testProjectDir.delete()
+    testProjectDir.delete()
   }
 
   before {
     buildFile = testProjectDir.newFile("build.gradle")
 
     withWriter(buildFile) { writer =>
-      writer.write("""plugins {
+      writer.write("""
+          |plugins {
+          |  id 'scala'
           |  id 'com.github.alisiikh.scalaxb'
           |}
-          |
-          |apply plugin: 'scala'
           |
           |repositories {
           |  mavenLocal()
@@ -71,31 +69,64 @@ class ScalaxbPluginSpec
   }
 
   "Scalaxb plugin" - {
-    "generates scala sources" in {
-      withWriter(buildFile, append = true) { writer =>
-        writer.append(
-          """
-            |scalaxb {
-            |    packageName = 'com.github.alisiikh.generated'
-            |    srcDir = file("$buildDir/src/main/resources/xsd")
-            |    destDir = file("$buildDir/generated/src/main/scala")
-            |}
-          """.stripMargin
-        )
+    "generates scala sources when" - {
+      ":generateScalaxb task is invoked directly" in {
+        injectScalaxbPluginConfig()
+
+        val result = GradleRunner.create
+          .withProjectDir(testProjectDir.getRoot)
+          .withArguments("generateScalaxb")
+          .withPluginClasspath()
+          .build
+
+        val taskResult = result.task(":generateScalaxb")
+        taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
+
+        val buildOutput = result.getOutput
+        checkScalaxbOutput(buildOutput)
       }
 
-      val result = GradleRunner.create
-        .withProjectDir(testProjectDir.getRoot)
-        .withArguments("generateScalaxb")
-        .withPluginClasspath()
-        .build
+      ":generateScalaxb task is called during :build task" in {
+        injectScalaxbPluginConfig()
 
-      result.task(":generateScalaxb").getOutcome shouldBe TaskOutcome.SUCCESS
+        val result = GradleRunner.create
+          .withProjectDir(testProjectDir.getRoot)
+          .withArguments("build")
+          .withPluginClasspath()
+          .build
+
+        val taskResult = result.task(":generateScalaxb")
+        taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
+
+        val buildOutput = result.getOutput
+        checkScalaxbOutput(buildOutput)
+      }
     }
   }
 
-  def withWriter(file: File, append: Boolean = false)(
-      body: PrintWriter => Unit): Unit = {
+  def injectScalaxbPluginConfig(): Unit =
+    withWriter(buildFile, append = true) { writer =>
+      writer.append(
+        """
+          |scalaxb {
+          |    packageName = 'com.github.alisiikh.generated'
+          |    srcDir = file("$projectDir/src/main/resources/xsd")
+          |    destDir = file("$buildDir/generated/src/main/scala")
+          |}
+        """.stripMargin
+      )
+    }
+
+  def checkScalaxbOutput(buildOutput: String): Unit = {
+    "generated .*/generated/src/main/scala/com/github/alisiikh/generated/sample.scala.".r
+      .findFirstIn(buildOutput) shouldBe 'defined
+    "generated .*/generated/src/main/scala/com/github/alisiikh/generated/xmlprotocol.scala.".r
+      .findFirstIn(buildOutput) shouldBe 'defined
+    "generated .*/generated/src/main/scala/scalaxb/scalaxb.scala.".r
+      .findFirstIn(buildOutput) shouldBe 'defined
+  }
+
+  def withWriter(file: File, append: Boolean = false)(body: PrintWriter => Unit): Unit = {
     val writer = new PrintWriter(new FileWriter(file, append))
     try {
       body(writer)
