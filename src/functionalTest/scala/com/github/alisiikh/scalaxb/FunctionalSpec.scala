@@ -25,36 +25,39 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
                             new File(testProjectDir.getRoot.getAbsolutePath, "src/main/resources"))
   }
 
-  override def afterAll(): Unit =
+  override def afterAll(): Unit = {
     super.afterAll()
-//    testProjectDir.delete()
+    testProjectDir.delete()
+  }
 
   before {
     buildFile = testProjectDir.newFile("build.gradle")
 
-    withWriter(buildFile) { writer => writer.write("""
-                     |plugins {
-                     |  id 'scala'
-                     |  id 'com.github.alisiikh.scalaxb'
-                     |}
-                     |
-                     |repositories {
-                     |  mavenLocal()
-                     |  mavenCentral()
-                     |  jcenter()
-                     |}
-                     |
-                     |dependencies {
-                     |  compile 'org.scala-lang:scala-library:2.12.3'
-                     |  scalaxbRuntime 'org.scalaxb:scalaxb_2.12:1.5.2'
-                     |}
-                     |
-                     |scalaxb {
-                     |  packageName = 'com.github.alisiikh.generated'
-                     |  srcDir = file("$projectDir/src/main/resources")
-                     |  destDir = file("$buildDir/generated/src/main/scala")
-                     |}
-                   """.stripMargin)
+    withWriter(buildFile) { writer =>
+      writer.write(
+        """plugins {
+          |  id 'scala'
+          |  id 'com.github.alisiikh.scalaxb'
+          |}
+          |
+          |repositories {
+          |  mavenLocal()
+          |  mavenCentral()
+          |  jcenter()
+          |}
+          |
+          |dependencies {
+          |  compile 'org.scala-lang:scala-library:2.12.3'
+          |  scalaxbRuntime 'org.scalaxb:scalaxb_2.12:1.5.2'
+          |}
+          |
+          |scalaxb {
+          |  packageName = 'com.github.alisiikh.generated'
+          |  srcDir = file("$projectDir/src/main/resources")
+          |  destDir = file("$buildDir/generated/src/main/scala")
+          |}
+        """.stripMargin
+      )
     }
   }
 

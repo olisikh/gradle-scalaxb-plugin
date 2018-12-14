@@ -15,12 +15,7 @@ class SimpleSpec
   "Scalaxb plugin" - {
     "generates scala sources when" - {
       ":generateScalaxb task is invoked directly" in {
-        val result = GradleRunner.create
-          .withProjectDir(testProjectDir.getRoot)
-          .withArguments("generateScalaxb")
-          .withDebug(true)
-          .withPluginClasspath()
-          .build
+        val result = buildTask("generateScalaxb").build()
 
         val taskResult = result.task(":generateScalaxb")
         taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
@@ -30,22 +25,33 @@ class SimpleSpec
       }
 
       ":generateScalaxb task is called during :build task" in {
-        val result = GradleRunner.create
-          .withProjectDir(testProjectDir.getRoot)
-          .withArguments("build")
-          .withDebug(true)
-          .withPluginClasspath()
-          .build
+        val result = buildTask("build").build()
 
         val taskResult = result.task(":generateScalaxb")
         taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
 
         val buildOutput = result.getOutput
-        println(buildOutput)
+        checkScalaxbOutput(buildOutput)
+      }
+
+      ":generateScalaxb task is called during :processResources task" in {
+        val result = buildTask("processResources").build
+
+        val taskResult = result.task(":generateScalaxb")
+        taskResult.getOutcome shouldBe TaskOutcome.SUCCESS
+
+        val buildOutput = result.getOutput
         checkScalaxbOutput(buildOutput)
       }
     }
   }
+
+
+  def buildTask(name: String): GradleRunner = GradleRunner.create
+    .withProjectDir(testProjectDir.getRoot)
+    .withArguments(name)
+    .withDebug(true)
+    .withPluginClasspath()
 
   def checkScalaxbOutput(buildOutput: String): Unit = {
     "generated .*/generated/src/main/scala/com/github/alisiikh/generated/root.scala.".r
