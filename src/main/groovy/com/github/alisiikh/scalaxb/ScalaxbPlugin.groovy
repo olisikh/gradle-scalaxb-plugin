@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.alisiikh.gradle.plugin.scalaxb
+package com.github.alisiikh.scalaxb
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -30,9 +30,9 @@ class ScalaxbPlugin implements Plugin<Project> {
     private final def SCALAXB_EXT_NAME = 'scalaxb'
     private final def SCALAXB_TASK_NAME = 'generateScalaxb'
 
-    private final def SCALAXB_DEP_HINT = "dependencies {\n" +
-            "   scalaxbRuntime 'org.scalaxb:scalaxb_2.12:1.5.2'\n" +
-            "}"
+    private final def SCALAXB_DEP_HINT = """dependencies {
+  scalaxbRuntime 'org.scalaxb:scalaxb_2.12:1.5.2'
+}"""
 
     private Project project
 
@@ -40,7 +40,7 @@ class ScalaxbPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
 
-        def scalaxbExt = project.extensions.create(SCALAXB_EXT_NAME, ScalaxbExtension, project) as ScalaxbExtension
+        def scalaxbExt = project.extensions.create(SCALAXB_EXT_NAME, ScalaxbExtension)
 
         createConfiguration()
         createTasks(scalaxbExt)
@@ -66,12 +66,12 @@ class ScalaxbPlugin implements Plugin<Project> {
         def scalaxbGenTask = project.tasks.create(
                 name: SCALAXB_TASK_NAME,
                 type: ScalaxbGenTask,
-                description: "Generate scalaxb sources", group: "scalaxb"
+                description: "Generate scalaxb sources",
+                group: "scalaxb"
         ) as ConventionTask
 
         scalaxbGenTask.convention.plugins["scalaxb"] = scalaxbExt
 
-        def scalaCompile = project.tasks.findByName('compileScala')
-        scalaCompile?.dependsOn(scalaxbGenTask)
+        project.tasks.findByName('processResources')?.dependsOn(scalaxbGenTask)
     }
 }

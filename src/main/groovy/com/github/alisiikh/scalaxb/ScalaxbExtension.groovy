@@ -19,10 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.alisiikh.gradle.plugin.scalaxb
+package com.github.alisiikh.scalaxb
 
 import groovy.transform.ToString
-import org.gradle.api.Project
 
 @ToString(excludes = 'project', includeNames = true, includePackage = false)
 class ScalaxbExtension {
@@ -49,10 +48,4 @@ class ScalaxbExtension {
     Boolean blocking
     Boolean verbose
     String dispatchVersion
-
-    private Project project
-
-    ScalaxbExtension(Project project) {
-        this.project = project
-    }
 }

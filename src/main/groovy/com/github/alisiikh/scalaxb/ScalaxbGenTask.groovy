@@ -19,8 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.alisiikh.gradle.plugin.scalaxb
+package com.github.alisiikh.scalaxb
 
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.JavaExec
 
 class ScalaxbGenTask extends JavaExec {
@@ -35,12 +36,18 @@ class ScalaxbGenTask extends JavaExec {
     ScalaxbGenTask() {
     }
 
+    ScalaxbExtension getExt() {
+        project.extensions.getByType(ScalaxbExtension)
+    }
+
+    @Input
+    File getSchemasFolder() {
+        ext.srcDir
+    }
+
     void exec() {
-        def ext = project.extensions.getByType(ScalaxbExtension)
-
-        def schemaFiles = ext.srcDir.listFiles(schemaFilter)
-
-        schemaFiles.each { srcFile ->
+        def schemaFiles = schemasFolder.listFiles(schemaFilter).toList()
+        if (schemaFiles) {
             project.javaexec {
                 classpath = project.configurations.scalaxbRuntime
                 main = 'scalaxb.compiler.Main'
@@ -50,7 +57,7 @@ class ScalaxbGenTask extends JavaExec {
                 standardOutput = System.out
 
                 ext.with {
-                    args srcFile.absolutePath
+                    args schemaFiles*.absolutePath.join(" ")
                     args "-d", destDir
                     if (packageDir) {
                         args "--package-dir"
