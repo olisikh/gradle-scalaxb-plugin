@@ -105,9 +105,6 @@ class ScalaxbGenTask extends JavaExec {
                 if (ext.prependFamily) {
                     spec.args "--prepend-family"
                 }
-                if (ext.withRuntime) {
-                    spec.args "--no-runtime"
-                }
                 if (ext.laxAny) {
                     spec.args "--lax-any"
                 }
@@ -116,6 +113,36 @@ class ScalaxbGenTask extends JavaExec {
                 }
                 if (ext.dispatchVersion) {
                     spec.args "--dispatch-version", ext.dispatchVersion
+                }
+                if (ext.attributePrefix) {
+                    spec.args "--attribute-prefix", ext.attributePrefix
+                }
+                if (ext.namedAttributes) {
+                    spec.args "--named-attributes"
+                }
+                if (ext.autoPackages) {
+                    spec.args "--auto-packages"
+                }
+                if (ext.mutable) {
+                    spec.args "--mutable"
+                }
+                if (ext.visitor) {
+                    spec.args "--visitor"
+                }
+                if (ext.noVarargs) {
+                    spec.args "--no-varargs"
+                }
+                if (ext.ignoreUnknown) {
+                    spec.args "--ignore-unknown"
+                }
+                if (ext.dispatchAs) {
+                    spec.args "--dispatch-as"
+                }
+                if (ext.noDispatchClient) {
+                    spec.args "--no-dispatch-client"
+                }
+                if (ext.noRuntime) {
+                    spec.args "--no-runtime"
                 }
                 if (ext.verbose) {
                     spec.args "--verbose"

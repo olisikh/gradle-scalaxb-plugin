@@ -40,15 +40,22 @@ class ScalaxbExtension {
     String classPrefix
     String paramPrefix
     String attributePrefix
+    Boolean namedAttributes
     Boolean prependFamily
     String wrapContents
     String protocolFile
     String protocolPackage
     Long contentsLimit
     Long chunkSize
-    Boolean withRuntime
     Boolean laxAny
     Boolean blocking
+    Boolean noVarargs
+    Boolean ignoreUnknown
+    Boolean dispatchAs
+    Boolean noDispatchClient
+    Boolean noRuntime
+    Boolean mutable
+    Boolean visitor
     Boolean verbose
     String dispatchVersion
 
