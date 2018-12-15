@@ -61,8 +61,8 @@ class ScalaxbPlugin implements Plugin<Project> {
         def scalaxbGenTask = project.tasks.create(
                 name: SCALAXB_TASK_NAME,
                 type: ScalaxbGenTask,
-                description: "Generates scala sources from xsd schemas.",
-                group: "scalaxb"
+                description: 'Generates scala sources from xsd schemas.',
+                group: 'scalaxb'
         ) as ConventionTask
 
         scalaxbGenTask.convention.plugins[SCALAXB_EXT_NAME] = scalaxbExt

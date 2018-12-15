@@ -21,7 +21,6 @@
  */
 package com.github.alisiikh.scalaxb
 
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.JavaExec
 
 class ScalaxbGenTask extends JavaExec {
@@ -42,64 +41,68 @@ class ScalaxbGenTask extends JavaExec {
 
         def schemaFiles = ext.srcDir.listFiles(schemaFilter).toList()
         if (schemaFiles) {
-            project.javaexec {
+            project.javaexec { spec ->
                 classpath = project.configurations.scalaxbRuntime
                 main = 'scalaxb.compiler.Main'
 
+                workingDir = ext.srcDir
                 systemProperties = System.properties as Map
                 standardInput = System.in
                 standardOutput = System.out
 
                 ext.with {
-                    args schemaFiles*.absolutePath.join(" ")
-                    args "-d", destDir
+                    schemaFiles.each {
+                        spec.args it.name
+                    }
+
+                    spec.args "-d", destDir
                     if (packageDir) {
-                        args "--package-dir"
+                        spec.args "--package-dir"
                     }
                     if (packageName) {
-                        args "-p", packageName
+                        spec.args "-p", packageName
                     }
                     packages?.each {
-                        args "--package:${it.key}=${it.value}"
+                        spec.args "--package:${it.key}=${it.value}"
                     }
                     if (classPrefix) {
-                        args "--class-prefix", classPrefix
+                        spec.args "--class-prefix", classPrefix
                     }
                     if (paramPrefix) {
-                        args "--param-prefix", paramPrefix
+                        spec.args "--param-prefix", paramPrefix
                     }
                     if (wrapContents) {
-                        args "--wrap-contents", wrapContents
+                        spec.args "--wrap-contents", wrapContents
                     }
                     if (contentsLimit) {
-                        args "--contents-limit", contentsLimit
+                        spec.args "--contents-limit", contentsLimit
                     }
                     if (chunkSize) {
-                        args "--chunk-size", chunkSize
+                        spec.args "--chunk-size", chunkSize
                     }
                     if (protocolFile) {
-                        args "--protocol-file", protocolFile
+                        spec.args "--protocol-file", protocolFile
                     }
                     if (protocolPackage) {
-                        args "--protocol-package", protocolPackage
+                        spec.args "--protocol-package", protocolPackage
                     }
                     if (prependFamily) {
-                        args "--prepend-family"
+                        spec.args "--prepend-family"
                     }
                     if (withRuntime) {
-                        args "--no-runtime"
+                        spec.args "--no-runtime"
                     }
                     if (laxAny) {
-                        args "--lax-any"
+                        spec.args "--lax-any"
                     }
                     if (blocking) {
-                        args "--blocking"
+                        spec.args "--blocking"
                     }
                     if (dispatchVersion) {
-                        args "--dispatch-version", dispatchVersion
+                        spec.args "--dispatch-version", dispatchVersion
                     }
                     if (verbose) {
-                        args "--verbose"
+                        spec.args "--verbose"
                     }
                 }
             }

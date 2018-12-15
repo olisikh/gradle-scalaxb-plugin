@@ -4,12 +4,13 @@ import java.nio.file.Path
 
 import org.gradle.internal.impldep.org.apache.commons.io.FileUtils
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
-import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.{BuildResult, GradleRunner}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpecLike}
 
 trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfterAll {
 
   def schemasFolder: Path
+  def scalaxbOverrides: String = ""
 
   val testProjectDir = new TemporaryFolder
 
@@ -28,6 +29,7 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
 
   override def afterAll(): Unit = {
     super.afterAll()
+    println(testProjectDir.getRoot.getAbsolutePath)
     testProjectDir.delete()
   }
 
@@ -36,7 +38,7 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
 
     withBuildFileWriter(buildFile) { writer =>
       writer.write(
-        """plugins {
+        s"""plugins {
           |  id 'scala'
           |  id 'com.github.alisiikh.scalaxb'
           |}
@@ -53,9 +55,10 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
           |
           |scalaxb {
           |  packageName = 'com.github.alisiikh.generated'
-          |  srcDir = file("$projectDir/src/main/resources")
-          |  destDir = file("$buildDir/generated/src/main/scala")
+          |  srcDir = file("$$projectDir/src/main/resources")
+          |  destDir = file("$$buildDir/generated/src/main/scala")
           |  verbose = true
+          |  $scalaxbOverrides
           |}
         """.stripMargin
       )
@@ -66,12 +69,17 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
     buildFile.delete()
   }
 
-  def buildTask(name: String): GradleRunner =
-    GradleRunner.create
-      .withProjectDir(testProjectDir.getRoot)
-      .withArguments(name)
-      .withDebug(true)
-      .withPluginClasspath()
+  def runTask(name: String)(f: BuildResult => Unit): Unit =
+    f {
+      val result = GradleRunner.create
+        .withProjectDir(testProjectDir.getRoot)
+        .withArguments(name)
+        .withPluginClasspath()
+        .build()
+
+      println(result.getOutput)
+      result
+    }
 
   def withBuildFileWriter(file: File, append: Boolean = false)(body: PrintWriter => Unit): Unit = {
     val writer = new PrintWriter(new FileWriter(file, append))
