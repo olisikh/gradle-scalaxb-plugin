@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.alisiikh.gradle.plugin.scalaxb
+package com.github.alisiikh.scalaxb
 
 import groovy.transform.ToString
 import org.gradle.api.Project
@@ -31,6 +31,8 @@ class ScalaxbExtension {
     // it contains more available parameters
     File srcDir
     File destDir
+    String toolVersion = '1.5.2'
+    String scalaMajorVersion = '2.12'
     Boolean packageDir = true
     String packageName
     Map<String, String> packages
@@ -54,5 +56,13 @@ class ScalaxbExtension {
 
     ScalaxbExtension(Project project) {
         this.project = project
+    }
+
+    File getSrcDir() {
+        srcDir ?: project.file("${project.projectDir}/src/main/resources")
+    }
+
+    File getDestDir() {
+        destDir ?: project.file("${project.buildDir}/generated/scala")
     }
 }

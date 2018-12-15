@@ -16,14 +16,15 @@ buildscript {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
+    gradleVersion = '4.10.2'
 }
 
-group 'com.github.alisiikh'
-version '0.0.4'
+group = projectGroup
+version = projectVersion
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.github.hierynomus.license'
 apply plugin: 'com.diffplug.gradle.spotless'
@@ -47,24 +48,26 @@ dependencies {
 }
 
 sourceSets {
-    functionalTest {
-        scala.srcDir file('src/functionalTest/scala')
-        resources.srcDir file('src/functionalTest/resources')
+    funcTest {
+        scala.srcDir file('src/funcTest/scala')
+        resources.srcDir file('src/funcTest/resources')
         compileClasspath += sourceSets.main.output + configurations.testRuntime
         runtimeClasspath += output + compileClasspath
     }
 }
 
-task functionalTest(type: Test) {
+task funcTest(type: Test) {
     description = 'Runs the functional tests.'
     group = 'verification'
-    testClassesDirs = sourceSets.functionalTest.output.classesDirs
-    classpath = sourceSets.functionalTest.runtimeClasspath
+    testClassesDirs = sourceSets.funcTest.output.classesDirs
+    classpath = sourceSets.funcTest.runtimeClasspath
+
+    maxParallelForks = 1
 }
-check.dependsOn functionalTest
+check.dependsOn funcTest
 
 gradlePlugin {
-    testSourceSets sourceSets.functionalTest
+    testSourceSets sourceSets.funcTest
 }
 
 license {
@@ -73,7 +76,6 @@ license {
     skipExistingHeaders = false
 
     excludes(['**/generated/**/*.scala',
-              '**/scalaxb/*.scala',
               '**/*.xml',
               '**/*.xsd'])
 
@@ -99,10 +101,12 @@ task licenseAndFormat {
 }
 
 pluginBundle {
-    def pluginDescription = 'Gradle plugin for scalaxb (XML data-binding for Scala)'
+    mavenCoordinates {
+        groupId = projectGroup
+    }
 
-    website = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
-    vcsUrl = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
+    website = projectGithub
+    vcsUrl = projectGithub
     description = pluginDescription
     tags = ['scalaxb', 'scala', 'xml', 'binding']
 

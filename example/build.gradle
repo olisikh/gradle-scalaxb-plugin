@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "com.github.alisiikh:scalaxb:0.1.0"
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.10.2'
+}
+
+group = 'com.github.alisiikh'
+version = '1.0-SNAPSHOT'
+
+apply plugin: 'scala'
+apply plugin: 'com.github.alisiikh.scalaxb'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile 'org.scala-lang:scala-library:2.12.6'
+}
+
+scalaxb {
+    packageName = 'com.github.alisiikh.example'
+}

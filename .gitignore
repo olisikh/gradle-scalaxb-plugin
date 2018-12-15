@@ -2,3 +2,6 @@
 **/.idea
 **/.gradle
 **/build
+
+example/gradle
+example/gradlew*
