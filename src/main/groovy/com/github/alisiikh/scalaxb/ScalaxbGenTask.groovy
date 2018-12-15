@@ -21,7 +21,9 @@
  */
 package com.github.alisiikh.scalaxb
 
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.OutputDirectory
 
 class ScalaxbGenTask extends JavaExec {
 
@@ -33,6 +35,20 @@ class ScalaxbGenTask extends JavaExec {
     }
 
     ScalaxbGenTask() {
+    }
+
+    ScalaxbExtension getExtension() {
+        project.extensions.getByType(ScalaxbExtension)
+    }
+
+    @InputDirectory
+    File getSrcDir() {
+        getExtension().srcDir
+    }
+
+    @OutputDirectory
+    File getOutputDir() {
+        getExtension().destDir
     }
 
     @Override
@@ -106,6 +122,8 @@ class ScalaxbGenTask extends JavaExec {
                     }
                 }
             }
+        } else {
+            project.logger.warn("No schema files found to generate scala classes from!")
         }
     }
 }

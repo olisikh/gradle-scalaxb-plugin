@@ -25,6 +25,7 @@ package com.github.alisiikh.scalaxb
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.ConventionTask
+import org.gradle.api.plugins.scala.ScalaPlugin
 
 class ScalaxbPlugin implements Plugin<Project> {
     private final def SCALAXB_EXT_NAME = 'scalaxb'
@@ -36,6 +37,8 @@ class ScalaxbPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
 
+        project.pluginManager.apply(ScalaPlugin)
+
         def scalaxbExt = project.extensions.create(SCALAXB_EXT_NAME, ScalaxbExtension)
 
         createConfiguration()
@@ -44,15 +47,27 @@ class ScalaxbPlugin implements Plugin<Project> {
 
     def createConfiguration() {
         project.configurations {
-            create('scalaxbRuntime') {
-                visible = false
+            ['scalaxb', 'scalaxbRuntime'].each {
+                create(it) {
+                    visible = false
+                }
             }
+
+            scalaxbRuntime.extendsFrom(scalaxb)
+            compile.extendsFrom(scalaxb)
         }
 
         project.afterEvaluate { p ->
             def ext = project.extensions.findByType(ScalaxbExtension)
+
+            p.sourceSets.main {
+                scala {
+                    srcDirs += [ext.destDir]
+                }
+            }
+
             p.dependencies {
-                scalaxbRuntime "org.scalaxb:scalaxb_${ext.scalaMajorVersion}:${ext.toolVersion}"
+                scalaxb "org.scalaxb:scalaxb_${ext.scalaMajorVersion}:${ext.toolVersion}"
             }
         }
     }
@@ -67,6 +82,6 @@ class ScalaxbPlugin implements Plugin<Project> {
 
         scalaxbGenTask.convention.plugins[SCALAXB_EXT_NAME] = scalaxbExt
 
-        project.tasks.findByName('processResources')?.dependsOn(scalaxbGenTask)
+        project.tasks.findByName('compileScala').dependsOn(scalaxbGenTask)
     }
 }

@@ -16,14 +16,15 @@ buildscript {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
+    gradleVersion = '4.10.2'
 }
 
-group 'com.github.alisiikh'
-version '0.0.4'
+group = projectGroup
+version = projectVersion
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.github.hierynomus.license'
 apply plugin: 'com.diffplug.gradle.spotless'
@@ -60,6 +61,8 @@ task funcTest(type: Test) {
     group = 'verification'
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
+
+    maxParallelForks = 1
 }
 check.dependsOn funcTest
 
@@ -98,10 +101,12 @@ task licenseAndFormat {
 }
 
 pluginBundle {
-    def pluginDescription = 'Gradle plugin for scalaxb (XML data-binding for Scala)'
+    mavenCoordinates {
+        groupId = projectGroup
+    }
 
-    website = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
-    vcsUrl = 'https://github.com/alisiikh/gradle-scalaxb-plugin'
+    website = projectGithub
+    vcsUrl = projectGithub
     description = pluginDescription
     tags = ['scalaxb', 'scala', 'xml', 'binding']
 

@@ -33,23 +33,34 @@ class SimpleSpec extends FunctionalSpec with Matchers with OptionValues {
   "Scalaxb plugin" - {
     "generates scala sources from xsd schemas when" - {
       ":generateScalaxb task is invoked directly" in {
-        runTask("generateScalaxb") { result =>
+        runGradle("clean", "generateScalaxb") { result =>
           result.task(":generateScalaxb").getOutcome shouldBe TaskOutcome.SUCCESS
           checkScalaxbOutput(result.getOutput)
         }
       }
 
-      ":generateScalaxb task is called during :build task" in {
-        runTask("build") { result =>
+      ":generateScalaxb task is run before :build task" in {
+        runGradle("clean", "build") { result =>
           result.task(":generateScalaxb").getOutcome shouldBe TaskOutcome.SUCCESS
           checkScalaxbOutput(result.getOutput)
         }
       }
 
-      ":generateScalaxb task is called during :processResources task" in {
-        runTask("processResources") { result =>
+      ":generateScalaxb task is run before :compileScala task" in {
+        runGradle("clean", "compileScala") { result =>
+          result.task(":compileScala").getOutcome shouldBe TaskOutcome.SUCCESS
+          checkScalaxbOutput(result.getOutput)
+        }
+      }
+
+      ":generateScalaxb is supports incremental cache" in {
+        runGradle("clean", "generateScalaxb") { result =>
           result.task(":generateScalaxb").getOutcome shouldBe TaskOutcome.SUCCESS
           checkScalaxbOutput(result.getOutput)
+        }
+
+        runGradle("generateScalaxb") { result =>
+          result.task(":generateScalaxb").getOutcome shouldBe TaskOutcome.UP_TO_DATE
         }
       }
     }
@@ -57,9 +68,9 @@ class SimpleSpec extends FunctionalSpec with Matchers with OptionValues {
 
   def checkScalaxbOutput(buildOutput: String): Unit =
     List(
-      "generated .*/generated/src/main/scala/com/github/alisiikh/generated/root.scala.",
-      "generated .*/generated/src/main/scala/com/github/alisiikh/generated/xmlprotocol.scala.",
-      "generated .*/generated/src/main/scala/scalaxb/scalaxb.scala."
+      "generated .*/generated/scala/com/github/alisiikh/generated/root.scala.",
+      "generated .*/generated/scala/com/github/alisiikh/generated/xmlprotocol.scala.",
+      "generated .*/generated/scala/scalaxb/scalaxb.scala."
     ).map(_.r)
       .foreach {
         _.findFirstIn(buildOutput) shouldBe 'defined

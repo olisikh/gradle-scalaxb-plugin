@@ -51,7 +51,6 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
 
   override def afterAll(): Unit = {
     super.afterAll()
-    println(testProjectDir.getRoot.getAbsolutePath)
     testProjectDir.delete()
   }
 
@@ -72,13 +71,13 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
           |}
           |
           |dependencies {
-          |  compile 'org.scala-lang:scala-library:2.12.3'
+          |  compile 'org.scala-lang:scala-library:2.12.6'
           |}
           |
           |scalaxb {
           |  packageName = 'com.github.alisiikh.generated'
           |  srcDir = file("$$projectDir/src/main/resources")
-          |  destDir = file("$$buildDir/generated/src/main/scala")
+          |  destDir = file("$$buildDir/generated/scala")
           |  verbose = true
           |  $scalaxbOverrides
           |}
@@ -91,11 +90,11 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
     buildFile.delete()
   }
 
-  def runTask(name: String)(f: BuildResult => Unit): Unit =
+  def runGradle(args: String*)(f: BuildResult => Unit): Unit =
     f {
       val result = GradleRunner.create
         .withProjectDir(testProjectDir.getRoot)
-        .withArguments(name)
+        .withArguments(args: _*)
         .withPluginClasspath()
         .build()
 
