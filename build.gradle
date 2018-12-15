@@ -73,7 +73,6 @@ license {
     skipExistingHeaders = false
 
     excludes(['**/generated/**/*.scala',
-              '**/scalaxb/*.scala',
               '**/*.xml',
               '**/*.xsd'])
 
