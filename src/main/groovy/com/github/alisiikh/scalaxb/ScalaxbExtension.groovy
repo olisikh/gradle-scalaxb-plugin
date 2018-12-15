@@ -22,6 +22,7 @@
 package com.github.alisiikh.scalaxb
 
 import groovy.transform.ToString
+import org.gradle.api.Project
 
 @ToString(excludes = 'project', includeNames = true, includePackage = false)
 class ScalaxbExtension {
@@ -50,4 +51,18 @@ class ScalaxbExtension {
     Boolean blocking
     Boolean verbose
     String dispatchVersion
+
+    private Project project
+
+    ScalaxbExtension(Project project) {
+        this.project = project
+    }
+
+    File getSrcDir() {
+        srcDir ?: project.file("${project.projectDir}/src/main/resources")
+    }
+
+    File getDestDir() {
+        destDir ?: project.file("${project.buildDir}/generated/scala")
+    }
 }

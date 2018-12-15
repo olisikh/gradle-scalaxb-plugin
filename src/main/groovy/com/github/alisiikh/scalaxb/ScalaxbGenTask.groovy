@@ -37,93 +37,92 @@ class ScalaxbGenTask extends JavaExec {
     ScalaxbGenTask() {
     }
 
-    ScalaxbExtension getExtension() {
-        project.extensions.getByType(ScalaxbExtension)
-    }
-
     @InputDirectory
     File getSrcDir() {
-        getExtension().srcDir
+        getExtension().getSrcDir()
     }
 
     @OutputDirectory
-    File getOutputDir() {
-        getExtension().destDir
+    File getDestDir() {
+        getExtension().getDestDir()
+    }
+
+    private ScalaxbExtension getExtension() {
+        project.extensions.getByType(ScalaxbExtension)
     }
 
     @Override
     void exec() {
-        def ext = project.extensions.getByType(ScalaxbExtension)
+        def ext = getExtension()
 
-        def schemaFiles = ext.srcDir.listFiles(schemaFilter).toList()
+        def schemaFiles = getSrcDir().listFiles(schemaFilter).toList()
         if (schemaFiles) {
             project.javaexec { spec ->
                 classpath = project.configurations.scalaxbRuntime
                 main = 'scalaxb.compiler.Main'
 
-                workingDir = ext.srcDir
+                workingDir = getSrcDir()
                 systemProperties = System.properties as Map
                 standardInput = System.in
                 standardOutput = System.out
 
-                ext.with {
-                    schemaFiles.each {
-                        spec.args it.name
-                    }
+                schemaFiles.each {
+                    spec.args it.name
+                }
 
-                    spec.args "-d", destDir
-                    if (packageDir) {
-                        spec.args "--package-dir"
-                    }
-                    if (packageName) {
-                        spec.args "-p", packageName
-                    }
-                    packages?.each {
-                        spec.args "--package:${it.key}=${it.value}"
-                    }
-                    if (classPrefix) {
-                        spec.args "--class-prefix", classPrefix
-                    }
-                    if (paramPrefix) {
-                        spec.args "--param-prefix", paramPrefix
-                    }
-                    if (wrapContents) {
-                        spec.args "--wrap-contents", wrapContents
-                    }
-                    if (contentsLimit) {
-                        spec.args "--contents-limit", contentsLimit
-                    }
-                    if (chunkSize) {
-                        spec.args "--chunk-size", chunkSize
-                    }
-                    if (protocolFile) {
-                        spec.args "--protocol-file", protocolFile
-                    }
-                    if (protocolPackage) {
-                        spec.args "--protocol-package", protocolPackage
-                    }
-                    if (prependFamily) {
-                        spec.args "--prepend-family"
-                    }
-                    if (withRuntime) {
-                        spec.args "--no-runtime"
-                    }
-                    if (laxAny) {
-                        spec.args "--lax-any"
-                    }
-                    if (blocking) {
-                        spec.args "--blocking"
-                    }
-                    if (dispatchVersion) {
-                        spec.args "--dispatch-version", dispatchVersion
-                    }
-                    if (verbose) {
-                        spec.args "--verbose"
-                    }
+                spec.args "-d", getDestDir()
+
+                if (ext.packageDir) {
+                    spec.args "--package-dir"
+                }
+                if (ext.packageName) {
+                    spec.args "-p", ext.packageName
+                }
+                ext.packages?.each {
+                    spec.args "--package:${it.key}=${it.value}"
+                }
+                if (ext.classPrefix) {
+                    spec.args "--class-prefix", ext.classPrefix
+                }
+                if (ext.paramPrefix) {
+                    spec.args "--param-prefix", ext.paramPrefix
+                }
+                if (ext.wrapContents) {
+                    spec.args "--wrap-contents", ext.wrapContents
+                }
+                if (ext.contentsLimit) {
+                    spec.args "--contents-limit", ext.contentsLimit
+                }
+                if (ext.chunkSize) {
+                    spec.args "--chunk-size", ext.chunkSize
+                }
+                if (ext.protocolFile) {
+                    spec.args "--protocol-file", ext.protocolFile
+                }
+                if (ext.protocolPackage) {
+                    spec.args "--protocol-package", ext.protocolPackage
+                }
+                if (ext.prependFamily) {
+                    spec.args "--prepend-family"
+                }
+                if (ext.withRuntime) {
+                    spec.args "--no-runtime"
+                }
+                if (ext.laxAny) {
+                    spec.args "--lax-any"
+                }
+                if (ext.blocking) {
+                    spec.args "--blocking"
+                }
+                if (ext.dispatchVersion) {
+                    spec.args "--dispatch-version", ext.dispatchVersion
+                }
+                if (ext.verbose) {
+                    spec.args "--verbose"
                 }
             }
         } else {
-            project.logger.warn("No schema files found to generate scala classes from!")
+            project.logger.warn("No schema files found at ${getSrcDir()} to generate scala classes from!")
         }
     }
 }

@@ -39,7 +39,7 @@ class ScalaxbPlugin implements Plugin<Project> {
 
         project.pluginManager.apply(ScalaPlugin)
 
-        def scalaxbExt = project.extensions.create(SCALAXB_EXT_NAME, ScalaxbExtension)
+        def scalaxbExt = project.extensions.create(SCALAXB_EXT_NAME, ScalaxbExtension, project)
 
         createConfiguration()
         createTask(scalaxbExt)

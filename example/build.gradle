@@ -37,7 +37,5 @@ dependencies {
 }
 
 scalaxb {
-    srcDir = file("${rootDir}/src/main/resources")
-    destDir = file("${buildDir}/generated/scala")
     packageName = 'com.github.alisiikh.example'
 }
