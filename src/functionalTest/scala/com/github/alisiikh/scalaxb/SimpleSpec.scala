@@ -5,15 +5,12 @@ import java.nio.file.{Path, Paths}
 import org.gradle.testkit.runner.{GradleRunner, TaskOutcome}
 import org.scalatest._
 
-class SimpleSpec
-    extends FunctionalSpec
-    with Matchers
-    with OptionValues {
+class SimpleSpec extends FunctionalSpec with Matchers with OptionValues {
 
   override def schemasFolder: Path = Paths.get(getClass.getResource("/simple").getPath)
 
   "Scalaxb plugin" - {
-    "generates scala sources when" - {
+    "generates scala sources from xsd schemas when" - {
       ":generateScalaxb task is invoked directly" in {
         val result = buildTask("generateScalaxb").build()
 
@@ -45,13 +42,6 @@ class SimpleSpec
       }
     }
   }
-
-
-  def buildTask(name: String): GradleRunner = GradleRunner.create
-    .withProjectDir(testProjectDir.getRoot)
-    .withArguments(name)
-    .withDebug(true)
-    .withPluginClasspath()
 
   def checkScalaxbOutput(buildOutput: String): Unit = {
     "generated .*/generated/src/main/scala/com/github/alisiikh/generated/root.scala.".r

@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 import org.gradle.internal.impldep.org.apache.commons.io.FileUtils
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
+import org.gradle.testkit.runner.GradleRunner
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpecLike}
 
 trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfterAll {
@@ -33,7 +34,7 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
   before {
     buildFile = testProjectDir.newFile("build.gradle")
 
-    withWriter(buildFile) { writer =>
+    withBuildFileWriter(buildFile) { writer =>
       writer.write(
         """plugins {
           |  id 'scala'
@@ -48,13 +49,13 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
           |
           |dependencies {
           |  compile 'org.scala-lang:scala-library:2.12.3'
-          |  scalaxbRuntime 'org.scalaxb:scalaxb_2.12:1.5.2'
           |}
           |
           |scalaxb {
           |  packageName = 'com.github.alisiikh.generated'
           |  srcDir = file("$projectDir/src/main/resources")
           |  destDir = file("$buildDir/generated/src/main/scala")
+          |  verbose = true
           |}
         """.stripMargin
       )
@@ -65,7 +66,14 @@ trait FunctionalSpec extends FreeSpecLike with BeforeAndAfter with BeforeAndAfte
     buildFile.delete()
   }
 
-  def withWriter(file: File, append: Boolean = false)(body: PrintWriter => Unit): Unit = {
+  def buildTask(name: String): GradleRunner =
+    GradleRunner.create
+      .withProjectDir(testProjectDir.getRoot)
+      .withArguments(name)
+      .withDebug(true)
+      .withPluginClasspath()
+
+  def withBuildFileWriter(file: File, append: Boolean = false)(body: PrintWriter => Unit): Unit = {
     val writer = new PrintWriter(new FileWriter(file, append))
     try {
       body(writer)

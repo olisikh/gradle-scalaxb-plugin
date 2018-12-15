@@ -21,7 +21,7 @@
  */
 package com.github.alisiikh.scalaxb
 
-import org.gradle.api.GradleException
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.ConventionTask
@@ -29,10 +29,6 @@ import org.gradle.api.internal.ConventionTask
 class ScalaxbPlugin implements Plugin<Project> {
     private final def SCALAXB_EXT_NAME = 'scalaxb'
     private final def SCALAXB_TASK_NAME = 'generateScalaxb'
-
-    private final def SCALAXB_DEP_HINT = """dependencies {
-  scalaxbRuntime 'org.scalaxb:scalaxb_2.12:1.5.2'
-}"""
 
     private Project project
 
@@ -43,7 +39,7 @@ class ScalaxbPlugin implements Plugin<Project> {
         def scalaxbExt = project.extensions.create(SCALAXB_EXT_NAME, ScalaxbExtension)
 
         createConfiguration()
-        createTasks(scalaxbExt)
+        createTask(scalaxbExt)
     }
 
     def createConfiguration() {
@@ -54,23 +50,22 @@ class ScalaxbPlugin implements Plugin<Project> {
         }
 
         project.afterEvaluate { p ->
-            def scalaxbDependency = p.configurations.scalaxbRuntime.find { it.name.matches("scalaxb_.*-.*\\.jar") }
-            if (!scalaxbDependency) {
-                throw new GradleException("No scalaxb dependency found in the scalaxbRuntime classpath.\n" +
-                        SCALAXB_DEP_HINT)
+            def ext = project.extensions.findByType(ScalaxbExtension)
+            p.dependencies {
+                scalaxbRuntime "org.scalaxb:scalaxb_${ext.scalaMajorVersion}:${ext.toolVersion}"
             }
         }
     }
 
-    def createTasks(ScalaxbExtension scalaxbExt) {
+    def createTask(ScalaxbExtension scalaxbExt) {
         def scalaxbGenTask = project.tasks.create(
                 name: SCALAXB_TASK_NAME,
                 type: ScalaxbGenTask,
-                description: "Generate scalaxb sources",
+                description: "Generates scala sources from xsd schemas.",
                 group: "scalaxb"
         ) as ConventionTask
 
-        scalaxbGenTask.convention.plugins["scalaxb"] = scalaxbExt
+        scalaxbGenTask.convention.plugins[SCALAXB_EXT_NAME] = scalaxbExt
 
         project.tasks.findByName('processResources')?.dependsOn(scalaxbGenTask)
     }

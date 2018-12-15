@@ -30,6 +30,8 @@ class ScalaxbExtension {
     // it contains more available parameters
     File srcDir
     File destDir
+    String toolVersion = '1.5.2'
+    String scalaMajorVersion = '2.12'
     Boolean packageDir = true
     String packageName
     Map<String, String> packages

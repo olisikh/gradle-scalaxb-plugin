@@ -22,9 +22,7 @@
 package com.github.alisiikh.scalaxb
 
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.JavaExec
-import org.gradle.plugins.ide.eclipse.model.Output
 
 class ScalaxbGenTask extends JavaExec {
 
@@ -38,22 +36,11 @@ class ScalaxbGenTask extends JavaExec {
     ScalaxbGenTask() {
     }
 
-    ScalaxbExtension getExt() {
-        project.extensions.getByType(ScalaxbExtension)
-    }
-
-    @InputDirectory
-    File getSrcFolder() {
-        ext.srcDir
-    }
-
-    @OutputDirectory
-    File getDestFolder() {
-        ext.destDir
-    }
-
+    @Override
     void exec() {
-        def schemaFiles = srcFolder.listFiles(schemaFilter).toList()
+        def ext = project.extensions.getByType(ScalaxbExtension)
+
+        def schemaFiles = ext.srcDir.listFiles(schemaFilter).toList()
         if (schemaFiles) {
             project.javaexec {
                 classpath = project.configurations.scalaxbRuntime
