@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.github.alisiikh:scalaxb:0.1.0"
+        classpath "com.github.alisiikh:gradle-scalaxb-plugin:0.1.0"
     }
 }
 
