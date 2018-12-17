@@ -121,7 +121,7 @@ class ScalaxbGenTask extends JavaExec {
                     spec.args "--named-attributes"
                 }
                 if (ext.autoPackages) {
-                    spec.args "--auto-packages"
+                    spec.args "--autopackages"
                 }
                 if (ext.mutable) {
                     spec.args "--mutable"
